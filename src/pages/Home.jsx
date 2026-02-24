@@ -1,13 +1,22 @@
 import Button from "../components/Button";
+import { useNavigate } from "react-router-dom";
+
 function Home() {
 
-    return(
-        <div>
+  const navigate = useNavigate() //lets your button move the user to another page when clicked.
 
-     <h1>Home Page</h1>;
+  const handleShopClick =()=>{
+    navigate("/shop")
+  }
 
-    <Button>
-    Click me
+  return(
+  <div>
+
+  <h1>Home Page</h1>
+  <p>Welcome to our store</p>
+      
+    <Button onClick={handleShopClick}>
+    Shop Now
   </Button>
   </div>
 )
