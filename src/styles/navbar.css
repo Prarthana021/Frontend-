@@ -1,0 +1,23 @@
+.navbar {
+    display: flex; /* display: flex is used to align the brand and the nav-links in a row*/
+    justify-content: space-between; /* space between the brand and the nav-links (which are 2 components of navbar)*/
+    padding: 25px 24px;    /* padding is something that keeps the navbar box size fixed and the content inside the box is not touching the edges of the box*/
+    background: #332167;
+  }
+
+.brand {
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 20px;
+  }
+.nav-links {
+    display: flex;
+    gap: 20px;
+  }
+
+.nav-links a {
+    color: #e5e7eb;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s ease;
+  }
