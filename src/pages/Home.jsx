@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 function Home() {
 
   const navigate = useNavigate() //lets your button move the user to another page when clicked.
-
   const handleShopClick =()=>{
     navigate("/shop")
   }
@@ -13,8 +12,7 @@ function Home() {
   <div>
 
   <h1>Home Page</h1>
-  <p>Welcome to our store</p>
-      
+  <p>Welcome to our store</p>   
     <Button onClick={handleShopClick}>
     Shop Now
   </Button>
