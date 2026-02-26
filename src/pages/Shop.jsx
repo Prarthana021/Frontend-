@@ -4,10 +4,12 @@ import ProductCard from "../components/ProductCard";
 import { getProducts } from "../services/api";
 
 function Shop() {
-   const[product,setProducts] = useState([])
+   const[products,setProducts] = useState([])
    const[loading, setLoading]=useState(true)
    const[error,setError]=useState("")
    const[search,setSearch]=useState("")
+   const[category, setCategory]=useState("all")
+
 
    useEffect(()=>{
     async function load() {
@@ -30,10 +32,16 @@ function Shop() {
    if (loading) return <h2>Loading...</h2>;
    if (error) return <h2>{error}</h2>;
 
-      const filteredProducts = product.filter((p)=>p.title.toLowerCase().includes(search.toLowerCase()))
-      function handleAdd() {
+   const filteredProducts = products
+   .filter((p) => (category === "all" ? true : p.category === category))
+   .filter((p) => p.title.toLowerCase().includes(search.toLowerCase()));      
+   
+   function handleAdd() {
         alert("Added to cart (later we’ll connect real cart)");
       }
+
+  const categories=["all", ...new Set(products.map((p)=> p.category))] 
+
     return (
       <div>
 
@@ -42,6 +50,16 @@ function Shop() {
       value={search}
       onChange={(e)=>setSearch(e.target.value)}
       />
+
+      <select value={category} onChange={(e)=>setCategory(e.target.value)}>
+      {categories.map((c) => (
+    <option key={c} value={c}>
+      {c}
+    </option>
+     ))}
+
+      </select>
+
 
       <div className="products-container">
 
@@ -60,3 +78,4 @@ function Shop() {
 
   }
   export default Shop;
+
