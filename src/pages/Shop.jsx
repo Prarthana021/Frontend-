@@ -3,12 +3,11 @@ import Input from "../components/Input";
 import ProductCard from "../components/ProductCard";
 import { getProducts } from "../services/api";
 
-
-
 function Shop() {
    const[product,setProducts] = useState([])
    const[loading, setLoading]=useState(true)
    const[error,setError]=useState("")
+   const[search,setSearch]=useState("")
 
    useEffect(()=>{
     async function load() {
@@ -31,6 +30,7 @@ function Shop() {
    if (loading) return <h2>Loading...</h2>;
    if (error) return <h2>{error}</h2>;
 
+      const filteredProducts = product.filter((p)=>p.title.toLowerCase().includes(search.toLowerCase()))
       function handleAdd() {
         alert("Added to cart (later we’ll connect real cart)");
       }
@@ -38,9 +38,14 @@ function Shop() {
       <div>
 
       <h1>Shop</h1>
+      <Input placeholder="Search products..." 
+      value={search}
+      onChange={(e)=>setSearch(e.target.value)}
+      />
+
       <div className="products-container">
 
-      {product.map((p) => (
+      {filteredProducts.map((p) => (
       <ProductCard
             key={p.id}
             product={p}
@@ -48,7 +53,6 @@ function Shop() {
           />
       ))}
       </div>
-      <Input placeholder="Search products..." />
 
     </div>
 
