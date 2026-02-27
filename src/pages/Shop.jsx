@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import Input from "../components/Input";
 import ProductCard from "../components/ProductCard";
 import { getProducts } from "../services/api";
+import useDebounce from "../hooks/debounce";
+
 
 function Shop() {
    const[products,setProducts] = useState([])
@@ -10,10 +12,11 @@ function Shop() {
    const[search,setSearch]=useState("")
    const[category, setCategory]=useState("all")
 
+  const debouncedSearch = useDebounce(search, 300);
 
    useEffect(()=>{
     async function load() {
-        try {
+           try {
           setLoading(true);
           setError("");
           const data = await getProducts();
@@ -34,30 +37,28 @@ function Shop() {
 
    const filteredProducts = products
    .filter((p) => (category === "all" ? true : p.category === category))
-   .filter((p) => p.title.toLowerCase().includes(search.toLowerCase()));      
+.filter((p) => p.title.toLowerCase().includes(search.toLowerCase()));
    
    function handleAdd() {
         alert("Added to cart (later we’ll connect real cart)");
       }
 
-  const categories=["all", ...new Set(products.map((p)=> p.category))] 
+  const categories=["all", ...new Set(products.map((p)=> p.category))]
 
     return (
       <div>
 
       <h1>Shop</h1>
-      <Input placeholder="Search products..." 
+      <Input placeholder="Search products..."
       value={search}
       onChange={(e)=>setSearch(e.target.value)}
       />
-
       <select value={category} onChange={(e)=>setCategory(e.target.value)}>
       {categories.map((c) => (
     <option key={c} value={c}>
       {c}
     </option>
-     ))}
-
+))}
       </select>
 
 
