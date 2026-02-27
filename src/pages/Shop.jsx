@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import Input from "../components/Input";
 import ProductCard from "../components/ProductCard";
 import { getProducts } from "../services/api";
-import useDebounce from "../hooks/debounce";
-
+import useDebounce from "../hooks/debounce.js";
 
 function Shop() {
    const[products,setProducts] = useState([])
@@ -60,8 +59,6 @@ function Shop() {
     </option>
 ))}
       </select>
-
-
       <div className="products-container">
 
       {filteredProducts.map((p) => (
