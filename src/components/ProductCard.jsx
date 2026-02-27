@@ -1,6 +1,6 @@
 import Button from "./Button";
 import "../styles/ProductCard.css";
-import { useCart } from "../context/CartContext"; // step 1
+import { useCart } from "../context/CartContext";
 
 function ProductCard(props){
 

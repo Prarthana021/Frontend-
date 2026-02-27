@@ -1,100 +1,93 @@
-// Import React hooks needed to create and use context and state
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
+const CartContext = createContext(null);
 
-// Create the CartContext object
-// This is like creating a global storage container
-const CartContext = createContext();
-
-
-// Create the Provider component
-// This component will wrap your whole app and provide cart data to all components
 export function CartProvider({ children }) {
-
-  // Create state to store cart items
-  // items = current cart array
-  // setItems = function to update cart
-  // Initially cart is empty []
+  // Load initial cart from localStorage (so refresh keeps cart)
   const [items, setItems] = useState(() => {
     const saved = localStorage.getItem("cart_items");
     return saved ? JSON.parse(saved) : [];
-   });
-   
-   useEffect(() => {
+  });
+
+  // Save cart to localStorage whenever items change
+  useEffect(() => {
     localStorage.setItem("cart_items", JSON.stringify(items));
   }, [items]);
 
-  // Function to add product to cart
-  // This will be called when user clicks "Add to Cart"
+  // Add product to cart (if exists -> qty + 1, else add with qty 1)
   function addToCart(product) {
-
-    // setItems updates the cart
-    // prev = previous cart state
     setItems((prev) => {
-
-      // Check if this product already exists in cart
-      // find() searches the array
       const existing = prev.find((i) => i.id === product.id);
 
-
-      // If product already exists in cart
       if (existing) {
-
-        // map creates a new array
-        // we update only the matching product
         return prev.map((i) =>
-
-          // If this is the same product
-          i.id === product.id
-
-            // copy item and increase quantity by 1
-            ? { ...i, qty: i.qty + 1 }
-
-            // otherwise keep item unchanged
-            : i
+          i.id === product.id ? { ...i, qty: i.qty + 1 } : i
         );
       }
 
-
-      // If product does NOT exist in cart
-
-      // ...prev copies all old cart items
-      // { ...product, qty: 1 } adds new product with quantity 1
-      return [...prev, { ...product, qty: 1 }];
+      // Store only what you need in cart item (cleaner)
+      return [
+        ...prev,
+        {
+          id: product.id,
+          title: product.title,
+          price: product.price,
+          image: product.image,
+          qty: 1,
+        },
+      ];
     });
   }
 
+  // Remove item completely
+  function removeFromCart(id) {
+    setItems((prev) => prev.filter((i) => i.id !== id));
+  }
 
+  // Increase quantity
+  function increaseQty(id) {
+    setItems((prev) =>
+      prev.map((i) => (i.id === id ? { ...i, qty: i.qty + 1 } : i))
+    );
+  }
 
-  // Provider makes cart data available to whole app
-  return (
+  // Decrease quantity (if qty becomes 0, remove item)
+  function decreaseQty(id) {
+    setItems((prev) =>
+      prev
+        .map((i) => (i.id === id ? { ...i, qty: i.qty - 1 } : i))
+        .filter((i) => i.qty > 0)
+    );
+  }
 
-    <CartContext.Provider
+  // Clear entire cart
+  function clearCart() {
+    setItems([]);
+  }
 
-      // value is what we want to share globally
-      value={{
+  // Totals (derived values)
+  const { totalCount, totalPrice } = useMemo(() => {
+    const totalCount = items.reduce((sum, i) => sum + i.qty, 0);
+    const totalPrice = items.reduce((sum, i) => sum + i.qty * i.price, 0);
+    return { totalCount, totalPrice };
+  }, [items]);
 
-        items,       // cart items array
+  const value = {
+    items,
+    addToCart,
+    removeFromCart,
+    increaseQty,
+    decreaseQty,
+    clearCart,
+    totalCount,
+    totalPrice,
+  };
 
-        addToCart    // function to add item
-
-      }}
-    >
-
-      {/* children means render the rest of your app */}
-      {children}
-
-    </CartContext.Provider>
-
-  );
+  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
 }
 
-
-
-// Create custom hook for easy access to cart
 export function useCart() {
-
-  // This lets any component access cart data
-  return useContext(CartContext);
-
+  const ctx = useContext(CartContext);
+  if (!ctx) throw new Error("useCart must be used inside CartProvider");
+  return ctx;
 }
